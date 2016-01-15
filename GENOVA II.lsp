@@ -13,35 +13,21 @@
 (defmethod initialize-instance :after ((indi individual) &key genome-length)
   (setf (slot-value indi 'genome) (make-array genome-length :element-type 'bit)))
 
-;example use: (make-instance 'individual :genome-length 10)  
+;randomizes individual's genome
+(defmethod randomize-genome ((indi individual))
+  (let ((v (slot-value indi 'genome)))
+  (loop for i from 0 to (- (array-dimension v 0) 1) do
+       (setf (aref v i) (random 2 )))))
+
+;create population vectors
+(defun populate (population-size genome-length) 
+  (let ((pop (make-array population-size :element-type 'individual)))
+  (loop for i from 0 to (- (array-dimension pop 0) 1) do
+	(setf (aref pop i ) (make-instance 'individual :genome-length genome-length)))
+    pop))
 
 
-;population vectors
-(setf popA (make-array population-size :element-type 'individual))
-(setf popB (make-array population-size :element-type 'individual))
-
-;globals (supplied to command line)
-;population size
-;genome size
-;max generations
-;functions - selection, crossover, mutation, fitness
-	
-;;TODO:
-;;default "construction" using make-array of individuals. use macro?
-;;eg, with macro can say make-array <size> element-type: 'individual <genome size>
-;;call it make-population
-;;also need randomize-population (use map to assign randoms to population individuals)
-;;selection, crossover, mutation, population vectors
-
-;;globals: command-line supplied functions (called the same way as built-ins),
-
-;;how to export as standalone executable? How to pass and parse command line args?
-
-;;put globals and main program in another file?
-	
-;;etc
-;---------
-;call function passed as string
-;(funcall (symbol-function (find-symbol (string-upcase "foo"))))
-;can also use APPLY instead of FUNCALL
-;"foo" can be replaced by a string variable
+;randomizes population's genomes
+(defun initialize-population (population)
+  (loop for i from 0 to (- (array-dimension population 0) 1) do
+       (randomize-genome (aref population i))))
