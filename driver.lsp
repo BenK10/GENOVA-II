@@ -1,9 +1,9 @@
 					;driver for GENOVA II
 ;setup
-(load "core.fasl") TODO working directory
-(init-params) TODO restore
-(load *ga-functions-file*) TODO Need pathnames, etc.
-;(init-params) ;moved here for DEBUGGING
+(load *core-engine*) 
+(load *ga-functions-file*)
+(init-params) 
+
 (defvar population (populate *population-size* *genome-length*))
 (defun most-fit ()
   (with-slots (fitness) (aref population 0) fitness))
