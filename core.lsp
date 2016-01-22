@@ -83,17 +83,19 @@
 
 ;make pool of candidates. Pool is indices of candidates; candidates may appear multiple times
 (defun make-selection-pool (population)
-  (call-by-string (*selection-function* population)))
+  (call-by-string *selection-function* population))
 
 ;produce the next generation
-(defun procreate (selection-pool)
-  (let ((descendants (make-array *population-size* :element-type 'individual))
-	(parent-a (slot-value (aref selection-pool (random (array-dimension selection-pool 0))) 'genome))
-	(parent-b (slot-value (aref selection-pool (random (array-dimension selection-pool 0))) 'genome)))
-  (loop for i from 0 to (- (array-dimension descendants 0) 1) do
-       (setf (slot-value (aref descendants i) 'genome)
-			 (call-by-string (*crossover-function* parent-a parent-b selection-pool))))
-	descendants))
+(defun procreate (selection-pool population)
+  (let ((descendants (populate *population-size* *genome-length*)))
+    (loop for i from 0 to (- (array-dimension descendants 0) 1) do
+	 (let* ((idx-a  (aref selection-pool (random (array-dimension selection-pool 0))))
+		(idx-b  (aref selection-pool (random (array-dimension selection-pool 0))))
+		(parent-a (slot-value (aref population idx-a) 'genome))
+		(parent-b (slot-value (aref population idx-b) 'genome)))
+	   (setf (slot-value (aref descendants i) 'genome)
+		 (call-by-string *crossover-function* parent-a parent-b))))
+    descendants))
 
 ;mutate random individuals
 (defun mutate (population)
@@ -106,11 +108,11 @@
 	(let* ((rand-idx (random (array-dimension population 0)))
 	       (mutant (slot-value (aref population rand-idx) 'genome)))
 	(setf (slot-value (aref population rand-idx) 'genome)
-	      (call-by-string (*mutation-function* mutant))))))))
+	      (call-by-string *mutation-function* mutant)))))))
 
 ;score individuals' fitnesses
 (defun rate-fitness (population)
   (loop for i from 0 to (- (array-dimension population 0) 1) do
        (setf (slot-value (aref population i) 'fitness)
-	     (call-by-string (*fitness-function* (slot-value (aref population i) 'fitness))))))
+	     (call-by-string *fitness-function* (slot-value (aref population i) 'genome)))))
 
