@@ -1,7 +1,6 @@
 ;GENOVA II
 
 ;simple genetic algorithm in LISP
-;instead of "scripts", just call external LISP functions at runtime. Simple, elegant, portable.
 ;first version: fixed population and individual sizes, all "genes" are bits
 
 ;globals
